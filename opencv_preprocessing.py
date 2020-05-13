@@ -25,6 +25,27 @@ def display_image(image):
 def resize_image(image, size=(800,800)):
     return cv2.resize(image, size)
 
+def blur_image(image):
+    return cv2.GaussianBlur(image, (11, 11), 0)
+
+def combine(image, contrast=True, resize=True, blur=False):
+    if contrast:
+        img = add_contrast(image)
+    if resize:
+        img = resize_image(img)
+    if blur:
+        img = blur_image(img)
+
+    return img
+
+def gray_image(image):
+    return cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+
+def convert_color(image, toRGB=True):
+    return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
+
+def thresh_image(image, threshold=175):
+    return cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)[1]
 
 
 
