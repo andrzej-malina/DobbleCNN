@@ -19,7 +19,7 @@ def read_image(image):
     return cv2.imread(image)
 
 def display_image(image):
-    plt.imshow(image)
+    plt.imshow(image, cmap='gray')
     plt.show()
 
 def save_image(directory, image, name):
@@ -48,10 +48,10 @@ def gray_image(image):
 def convert_color(image, toRGB=True):
     return cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
 
-def thresh_image(image, threshold=175):
+def thresh_image(image, threshold=185):
     return cv2.threshold(image, threshold, 255, cv2.THRESH_BINARY)[1]
 
-def grab_contours(image, threshold=190, all=False):
+def grab_contours_and_sort_by_area(image, threshold=185, all=False):
     image_grayed = gray_image(image)
     image_threshed = thresh_image(image_grayed, threshold=threshold)
 
@@ -61,12 +61,6 @@ def grab_contours(image, threshold=190, all=False):
         contours = cv2.findContours(image_threshed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
     contours = imutils.grab_contours(contours)
-
-    return sorted(contours, key=cv2.contourArea, reverse=True)
-
-def sort_countours_by_area(contours, area=False):
-    if all:
-        contours = [c for c in contours if cv2.contourArea(c) > area]
 
     return sorted(contours, key=cv2.contourArea, reverse=True)
 
@@ -81,3 +75,4 @@ def add_images(image1, image2, hor=True):
     else:
         img = np.concatenate((image1, image2), axis=0)
     return img
+
