@@ -76,3 +76,41 @@ def add_images(image1, image2, hor=True):
         img = np.concatenate((image1, image2), axis=0)
     return img
 
+#card in the foregroung
+def keep_contour(image, cnt):
+    gray = gray_image(image)
+    mask = np.zeros(gray.shape, np.uint8)
+    mask = cv2.drawContours(mask, [cnt], -1, 255, cv2.FILLED)
+    output = image.copy()
+    return cv2.bitwise_and(output, output, mask=mask)
+
+# white background (use inverted mask)
+def keep_contour_with_white_background(image, cnt):
+    gray = gray_image(image)
+    mask = np.zeros(gray.shape, np.uint8)
+    mask = cv2.drawContours(mask, [cnt], -1, 255, cv2.FILLED)
+    bk = np.full(image.shape, 255, dtype=np.uint8)
+    fg_masked = cv2.bitwise_and(image, image, mask=mask)
+    mask = cv2.bitwise_not(mask)
+    bk_masked = cv2.bitwise_and(bk, bk, mask=mask)
+    mask = cv2.bitwise_not(mask)
+    return cv2.bitwise_or(fg_masked, bk_masked)
+
+def get_rect_coordinates_around_contour(cnt):
+    x,y,w,h = cv2.boundingRect(cnt)
+    return x,y,w,h
+
+def bounding_square_around_contour(cnt):
+    x,y,w,h = get_rect_coordinates_around_contour(cnt)
+    # create squares instead of rectangulars
+    if w < h:
+        x += int((w-h)/2)
+        w = h
+    else:
+        y += int((h-w)/2)
+        h = w
+    return x, y, w, h
+
+def take_out_icons(image, x, y, w, h):
+    return image[y:y+h, x:x+w]
+
